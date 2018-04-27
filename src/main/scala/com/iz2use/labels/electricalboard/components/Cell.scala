@@ -22,17 +22,13 @@ object Cell {
         <.div(
           Style.printableOnly,
           Style.cellContent,
-          <.div(Style.icon, s.icon.map(i => svg.svg(svg.viewBox := "0 0 24 24", ^.dangerouslySetInnerHtml := i.svg)).getOrElse[TagMod]("")),
+          <.div(Style.icon, s.icon.map(i => svg.svg(svg.viewBox := "0 0 24 24", ^.dangerouslySetInnerHtml := i.svg, svg.stroke := i.mainColor, svg.fill := i.mainColor)).getOrElse[TagMod]("")),
+          //<.div(Style.icon, s.icon.map(i => i.imgsrc()).getOrElse[TagMod]("")),
           <.div(Style.label, s.label1, <.br(), s.label2)
         ),
         <.div(
           Style.notPrintable,
           Style.cellContent,
-          ^.draggable := true,
-          ^.onDragStart ==> { (ev: ReactDragEvent) =>
-            ev.dataTransfer.dropEffect = "move"
-            Callback(ev.dataTransfer.setData("item", s.id.toString))
-          },
           ^.onDragOver ==> { (ev: ReactDragEvent) =>
             ev.dataTransfer.dropEffect = "move"
             ev.preventDefaultCB
@@ -43,6 +39,12 @@ object Cell {
           },
           <.div(
             Style.label,
+            <.span(^.backgroundColor := "black", ^.width := "0.5em", ^.height := "0.5em",
+              ^.draggable := true,
+              ^.onDragStart ==> { (ev: ReactDragEvent) =>
+                ev.dataTransfer.dropEffect = "move"
+                Callback(ev.dataTransfer.setData("item", s.id.toString))
+              }),
             <.button(^.tabIndex := -1, "-", ^.onClick --> $.setState(s.copy(span = Math.max(1, s.span - 1)))),
             s.span,
             <.button(^.tabIndex := -1, "x", ^.onClick --> p.remove(s.id)),
